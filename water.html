@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Счётчик стаканов воды</title>
+    <title>Счётчик воды</title>
     <style>
         :root {
             --primary: #0066cc;
@@ -71,17 +71,6 @@
 
         body.dark-theme header {
             background: var(--surface-dark);
-        }
-
-        .header-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin: 0;
-            background: linear-gradient(45deg, var(--primary), var(--primary-light));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
         .main-content {
@@ -464,7 +453,7 @@
         .recommendation-text {
             font-size: 0.95rem;
             color: var(--text-light);
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
         body.dark-theme .recommendation-text {
@@ -561,9 +550,15 @@
             background: rgba(0, 102, 204, 0.1);
         }
 
+        .setting-content {
+            flex: 1;
+        }
+
         .setting-label {
             font-size: 0.9rem;
             color: var(--text-light);
+            margin-bottom: 5px;
+            display: block;
         }
 
         body.dark-theme .setting-label {
@@ -574,6 +569,32 @@
             font-weight: 600;
             color: var(--primary);
             font-size: 1.1rem;
+            display: block;
+        }
+
+        .setting-actions {
+            display: flex;
+            align-items: center;
+            margin-left: 15px;
+        }
+
+        .setting-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 12px;
+            background: var(--primary-light);
+            color: white;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .setting-btn:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
         }
 
         .switch {
@@ -621,22 +642,289 @@
             transform: translateX(26px);
         }
 
-        .export-btn {
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: var(--surface-light);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            width: 90%;
+            max-width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-light);
+            transition: transform 0.3s ease;
+            transform: scale(0.9);
+            opacity: 0;
+        }
+
+        body.dark-theme .modal-content {
+            background: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        body.dark-theme .modal-header {
+            border-color: var(--border-dark);
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        body.dark-theme .modal-title {
+            color: var(--text-dark);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .close-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-theme .close-btn {
+            color: var(--text-dark);
+        }
+
+        body.dark-theme .close-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        body.dark-theme .input-label {
+            color: var(--text-dark);
+        }
+
+        .input-field {
             width: 100%;
             padding: 12px;
-            margin-top: 10px;
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            background: var(--surface-light);
+            color: var(--text-light);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        body.dark-theme .input-field {
+            background: var(--surface-dark);
+            border-color: var(--border-dark);
+            color: var(--text-dark);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.2);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 20px;
+            border-top: 1px solid var(--border-light);
+            margin-top: 20px;
+        }
+
+        body.dark-theme .modal-footer {
+            border-color: var(--border-dark);
+        }
+
+        .modal-btn {
+            padding: 12px 25px;
             border: none;
             border-radius: 12px;
-            background: var(--primary-light);
-            color: white;
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
         }
 
-        .export-btn:hover {
-            background: var(--primary);
+        .modal-btn.cancel {
+            background: var(--border-light);
+            color: var(--text-light);
         }
+
+        body.dark-theme .modal-btn.cancel {
+            background: var(--border-dark);
+            color: var(--text-dark);
+        }
+
+        .modal-btn.cancel:hover {
+            background: #ddd;
+        }
+
+        body.dark-theme .modal-btn.cancel:hover {
+            background: #444;
+        }
+
+        .modal-btn.confirm {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+        }
+
+        .modal-btn.confirm:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+        }
+
+        .reset-modal {
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .reset-icon {
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+
+        .reset-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-light);
+        }
+
+        body.dark-theme .reset-title {
+            color: var(--text-dark);
+        }
+
+        .reset-text {
+            color: var(--text-light);
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        body.dark-theme .reset-text {
+            color: var(--text-dark);
+        }
+
+        .reset-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .reset-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .reset-btn.cancel {
+            background: var(--border-light);
+            color: var(--text-light);
+        }
+
+        body.dark-theme .reset-btn.cancel {
+            background: var(--border-dark);
+            color: var(--text-dark);
+        }
+
+        .reset-btn.cancel:hover {
+            background: #ddd;
+        }
+
+        body.dark-theme .reset-btn.cancel:hover {
+            background: #444;
+        }
+
+        .reset-btn.confirm {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+        }
+
+        .reset-btn.confirm:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+        }
+
+        
+        .confirm-btn {
+            display: block;
+            width: 60px;
+            height: 60px;
+            margin: 20px auto 30px;
+            border: none;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(0, 102, 204, 0.3);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .confirm-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 102, 204, 0.4);
+        }
+
+        .confirm-btn:active {
+            transform: translateY(0);
+        }
+        
 
         .empty-state {
             text-align: center;
@@ -666,10 +954,6 @@
         }
 
         @media (max-width: 480px) {
-            .header-title {
-                font-size: 1.6rem;
-            }
-
             .value-large {
                 font-size: 2.5rem;
             }
@@ -688,15 +972,11 @@
             }
         }
     </style>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <meta name="robots" content="noindex, nofollow">
-
-
 </head>
 <body>
     <div class="container">
         <header>
-            <h1 class="header-title">Умный счётчик воды</h1>
+            <h1 class="header-title"></h1>
         </header>
 
         <div class="main-content">
@@ -792,7 +1072,7 @@
                         <div class="empty-title">История пуста</div>
                         <div class="empty-text">Начните добавлять стаканы воды, чтобы увидеть историю</div>
                     </div>
-                    <button class="export-btn" id="exportHistoryBtn">Экспорт истории</button>
+                    <button class="btn" style="width: 100%; margin-top: 10px;" id="exportHistoryBtn">Экспорт истории</button>
                 </div>
             </div>
 
@@ -835,7 +1115,7 @@
                     </h3>
                     <div class="settings-grid">
                         <div class="setting-item">
-                            <div>
+                            <div class="setting-content">
                                 <div class="setting-label">Тёмная тема</div>
                                 <div class="setting-value">Переключение внешнего вида</div>
                             </div>
@@ -845,7 +1125,7 @@
                             </label>
                         </div>
                         <div class="setting-item">
-                            <div>
+                            <div class="setting-content">
                                 <div class="setting-label">Уведомления</div>
                                 <div class="setting-value">Получать напоминания</div>
                             </div>
@@ -855,35 +1135,42 @@
                             </label>
                         </div>
                         <div class="setting-item">
-                            <div>
+                            <div class="setting-content">
                                 <div class="setting-label">Напоминания</div>
                                 <div class="setting-value">Каждые 60 минут</div>
                             </div>
-                            <button class="btn" style="padding: 8px 12px; font-size: 0.8rem;">Настроить</button>
+                            <div class="setting-actions">
+                                <button class="setting-btn" data-modal="reminderModal">Настроить</button>
+                            </div>
                         </div>
                         <div class="setting-item">
-                            <div>
+                            <div class="setting-content">
                                 <div class="setting-label">Цель на день</div>
                                 <div class="setting-value">8 стаканов</div>
                             </div>
-                            <button class="btn" style="padding: 8px 12px; font-size: 0.8rem;">Изменить</button>
+                            <div class="setting-actions">
+                                <button class="setting-btn" data-modal="goalModal">Изменить</button>
+                            </div>
                         </div>
                         <div class="setting-item">
-                            <div>
+                            <div class="setting-content">
                                 <div class="setting-label">Размер стакана</div>
                                 <div class="setting-value">200 мл</div>
                             </div>
-                            <button class="btn" style="padding: 8px 12px; font-size: 0.8rem;">Изменить</button>
+                            <div class="setting-actions">
+                                <button class="setting-btn" data-modal="glassModal">Изменить</button>
+                            </div>
                         </div>
                         <div class="setting-item">
-                            <div>
+                            <div class="setting-content">
                                 <div class="setting-label">Язык</div>
                                 <div class="setting-value">Русский</div>
                             </div>
-                            <button class="btn" style="padding: 8px 12px; font-size: 0.8rem;">Изменить</button>
+                            <div class="setting-actions">
+                                <button class="setting-btn" data-modal="languageModal">Изменить</button>
+                            </div>
                         </div>
                     </div>
-                    <button class="export-btn" id="backupBtn">Резервная копия данных</button>
                 </div>
             </div>
         </div>
@@ -905,6 +1192,110 @@
                 <span class="nav-icon">⚙️</span>
                 <span class="nav-label">Настройки</span>
             </a>
+        </div>
+
+        <!-- Reset Confirmation Modal -->
+        <div id="resetModal" class="modal">
+            <div class="modal-content">
+                <div class="reset-modal">
+                    <div class="reset-icon">⚠️</div>
+                    <h3 class="reset-title">Сбросить счётчик?</h3>
+                    <p class="reset-text">Вы уверены, что хотите сбросить сегодняшний счётчик воды? Все данные за сегодняшний день будут удалены.</p>
+                    <div class="reset-buttons">
+                        <button class="reset-btn cancel" id="cancelReset">Отмена</button>
+                        <button class="reset-btn confirm" id="confirmReset">Сбросить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reminder Modal -->
+        <div id="reminderModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Настроить напоминания</h3>
+                    <button class="close-btn" data-modal-close="reminderModal">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group">
+                        <label class="input-label" for="reminderInterval">Интервал напоминаний (минуты)</label>
+                        <input type="number" id="reminderInterval" class="input-field" value="60" min="15" max="120">
+                    </div>
+                </div>
+                <!-- <div class="modal-footer">
+                    <button class="modal-btn cancel" data-modal-close="reminderModal">Отмена</button>
+                    <button class="modal-btn confirm" data-modal-confirm="reminderModal">Сохранить</button>
+                </div> -->
+                <button class="confirm-btn" data-modal-confirm="reminderModal">✓</button>
+            </div>
+        </div>
+
+        <!-- Goal Modal -->
+        <div id="goalModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Изменить цель</h3>
+                    <button class="close-btn" data-modal-close="goalModal">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group">
+                        <label class="input-label" for="dailyGoal">Цель на день (стаканы)</label>
+                        <input type="number" id="dailyGoal" class="input-field" value="8" min="1" max="20">
+                    </div>
+                </div>
+                <!-- <div class="modal-footer">
+                    <button class="modal-btn cancel" data-modal-close="goalModal">Отмена</button>
+                    <button class="modal-btn confirm" data-modal-confirm="goalModal">Сохранить</button>
+                </div> -->
+                <button class="confirm-btn" data-modal-confirm="goalModal">✓</button>
+            </div>
+        </div>
+
+        <!-- Glass Size Modal -->
+        <div id="glassModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Изменить размер стакана</h3>
+                    <button class="close-btn" data-modal-close="glassModal">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group">
+                        <label class="input-label" for="glassSize">Размер стакана (мл)</label>
+                        <input type="number" id="glassSize" class="input-field" value="200" min="100" max="500">
+                    </div>
+                </div>
+                <!-- <div class="modal-footer">
+                    <button class="modal-btn cancel" data-modal-close="glassModal">Отмена</button>
+                    <button class="modal-btn confirm" data-modal-confirm="glassModal">Сохранить</button>
+                </div> -->
+                <button class="confirm-btn" data-modal-confirm="glassModal">✓</button>
+            </div>
+        </div>
+
+        <!-- Language Modal -->
+        <div id="languageModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Изменить язык</h3>
+                    <button class="close-btn" data-modal-close="languageModal">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group">
+                        <label class="input-label" for="language">Выберите язык</label>
+                        <select id="language" class="input-field">
+                            <option value="ru">Русский</option>
+                            <option value="en">English</option>
+                            <option value="es">Español</option>
+                            <option value="fr">Français</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- <div class="modal-footer"> -->
+                    <!-- <button class="modal-btn cancel" data-modal-close="languageModal">Отмена</button> -->
+                    <!-- <button class="modal-btn confirm" data-modal-confirm="languageModal">✓</button> -->
+                <!-- </div> -->
+                 <button class="confirm-btn" data-modal-confirm="languageModal">✓</button>
+            </div>
         </div>
     </div>
 
@@ -943,11 +1334,24 @@
             addGlassBtn: document.getElementById('addGlassBtn'),
             resetBtn: document.getElementById('resetBtn'),
             exportHistoryBtn: document.getElementById('exportHistoryBtn'),
-            backupBtn: document.getElementById('backupBtn'),
             themeSwitch: document.getElementById('themeSwitch'),
             notificationsSwitch: document.getElementById('notificationsSwitch'),
             navItems: document.querySelectorAll('.nav-item'),
-            pages: document.querySelectorAll('.page')
+            pages: document.querySelectorAll('.page'),
+            // Modals
+            resetModal: document.getElementById('resetModal'),
+            reminderModal: document.getElementById('reminderModal'),
+            goalModal: document.getElementById('goalModal'),
+            glassModal: document.getElementById('glassModal'),
+            languageModal: document.getElementById('languageModal'),
+            // Modal buttons
+            cancelReset: document.getElementById('cancelReset'),
+            confirmReset: document.getElementById('confirmReset'),
+            // Modal inputs
+            reminderInterval: document.getElementById('reminderInterval'),
+            dailyGoalInput: document.getElementById('dailyGoal'),
+            glassSizeInput: document.getElementById('glassSize'),
+            languageSelect: document.getElementById('language')
         };
 
         // Mock history data
@@ -1158,24 +1562,39 @@
             showNotification('Стакан воды добавлен! 🎉');
         }
 
+        // Show reset confirmation modal
+        function showResetModal() {
+            elements.resetModal.style.display = 'flex';
+            setTimeout(() => {
+                elements.resetModal.classList.add('active');
+            }, 10);
+        }
+
+        // Hide reset confirmation modal
+        function hideResetModal() {
+            elements.resetModal.classList.remove('active');
+            setTimeout(() => {
+                elements.resetModal.style.display = 'none';
+            }, 300);
+        }
+
         // Reset today's count
         function resetToday() {
-            if (confirm('Вы уверены, что хотите сбросить сегодняшний счётчик?')) {
-                // Remove today's entries from history
-                const now = new Date();
-                state.history = state.history.filter(item => {
-                    const itemDate = new Date(item.time);
-                    return !(itemDate.getDate() === now.getDate() && 
-                            itemDate.getMonth() === now.getMonth() && 
-                            itemDate.getFullYear() === now.getFullYear());
-                });
-                
-                updateTodayStats();
-                updateProgress();
-                updateTimeline();
-                
-                showNotification('Сегодняшний счётчик сброшен');
-            }
+            // Remove today's entries from history
+            const now = new Date();
+            state.history = state.history.filter(item => {
+                const itemDate = new Date(item.time);
+                return !(itemDate.getDate() === now.getDate() && 
+                        itemDate.getMonth() === now.getMonth() && 
+                        itemDate.getFullYear() === now.getFullYear());
+            });
+            
+            updateTodayStats();
+            updateProgress();
+            updateTimeline();
+            
+            hideResetModal();
+            showNotification('Сегодняшний счётчик сброшен');
         }
 
         // Show notification
@@ -1260,6 +1679,24 @@
             localStorage.setItem('darkTheme', state.settings.darkTheme);
         }
 
+        // Show modal
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'flex';
+            setTimeout(() => {
+                modal.classList.add('active');
+            }, 10);
+        }
+
+        // Hide modal
+        function hideModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('active');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
+
         // Initialize app
         function init() {
             // Load dark theme preference
@@ -1281,9 +1718,8 @@
             
             // Set up event listeners
             elements.addGlassBtn.addEventListener('click', addGlass);
-            elements.resetBtn.addEventListener('click', resetToday);
+            elements.resetBtn.addEventListener('click', showResetModal);
             elements.exportHistoryBtn.addEventListener('click', () => showNotification('История экспортирована'));
-            elements.backupBtn.addEventListener('click', () => showNotification('Резервная копия создана'));
             
             // Theme switch
             elements.themeSwitch.addEventListener('change', toggleDarkTheme);
@@ -1301,6 +1737,72 @@
                     e.preventDefault();
                     const pageId = this.getAttribute('data-page');
                     switchPage(pageId);
+                });
+            });
+
+            // Reset modal buttons
+            elements.cancelReset.addEventListener('click', hideResetModal);
+            elements.confirmReset.addEventListener('click', resetToday);
+
+            // Close modal buttons
+            document.querySelectorAll('[data-modal-close]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const modalId = this.getAttribute('data-modal-close');
+                    hideModal(modalId);
+                });
+            });
+
+            // Confirm modal buttons
+            document.querySelectorAll('[data-modal-confirm]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const modalId = this.getAttribute('data-modal-confirm');
+                    
+                    // Handle different modals
+                    switch(modalId) {
+                        case 'reminderModal':
+                            state.settings.reminderInterval = parseInt(elements.reminderInterval.value);
+                            document.querySelector('[data-modal="reminderModal"]').parentElement.querySelector('.setting-value').textContent = `Каждые ${state.settings.reminderInterval} минут`;
+                            break;
+                        case 'goalModal':
+                            state.dailyGoal = parseInt(elements.dailyGoalInput.value);
+                            document.querySelector('[data-modal="goalModal"]').parentElement.querySelector('.setting-value').textContent = `${state.dailyGoal} стаканов`;
+                            updateProgress();
+                            break;
+                        case 'glassModal':
+                            state.glassSize = parseInt(elements.glassSizeInput.value);
+                            document.querySelector('[data-modal="glassModal"]').parentElement.querySelector('.setting-value').textContent = `${state.glassSize} мл`;
+                            updateProgress();
+                            break;
+                        case 'languageModal':
+                            state.settings.language = elements.languageSelect.value;
+                            const languageNames = { 'ru': 'Русский', 'en': 'English', 'es': 'Español', 'fr': 'Français' };
+                            document.querySelector('[data-modal="languageModal"]').parentElement.querySelector('.setting-value').textContent = languageNames[state.settings.language];
+                            break;
+                    }
+                    
+                    hideModal(modalId);
+                    showNotification('Настройки сохранены');
+                });
+            });
+
+            // Modal trigger buttons
+            document.querySelectorAll('[data-modal]').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const modalId = this.getAttribute('data-modal');
+                    showModal(modalId);
+                });
+            });
+
+            // Close modals when clicking outside
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.classList.remove('active');
+                        setTimeout(() => {
+                            this.style.display = 'none';
+                        }, 300);
+                    }
                 });
             });
             
