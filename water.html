@@ -33,21 +33,23 @@
             box-sizing: border-box;
         }
 
+        html, body {
+            height: 100%;
+            overflow: hidden; /* Глобальный скролл отключаем */
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: var(--background-light);
             color: var(--text-light);
             line-height: 1.6;
-            /* min-height: 100vh; */
             padding: 0;
             margin: 0;
             transition: background-color 0.3s ease;
-            height: 100%;
-            overflow: hidden;
-        }
-        html {
-            height: 100%;
-            overflow: hidden; /* Отключаем глобальный скролл */
+            display: flex; /* Используем flex вместо 100vh */
+            flex-direction: column; /* Колонка для header/content/footer */
+            height: 100vh; /* Фиксируем высоту */
+            max-height: -webkit-fill-available; /* Для мобильных Safari */
         }
 
         body.dark-theme {
@@ -58,10 +60,11 @@
         .container {
             max-width: 100%;
             margin: 0;
-            height: 100vh;
             display: flex;
             flex-direction: column;
+            height: 100%; /* Занимаем всю высоту body */
         }
+
 
         header {
             background: var(--surface-light);
@@ -82,10 +85,10 @@
         .main-content {
             flex: 1;
             padding: 20px;
-            overflow-y: auto; /* Включаем скролл внутри контейнера */
+            overflow-y: auto; /* Включаем скролл только здесь */
             -webkit-overflow-scrolling: touch; /* Плавный скролл для iOS */
+            overscroll-behavior: contain; /* Блокируем pull-to-refresh */
             transform: translateZ(0); /* Аппаратное ускорение */
-            will-change: scroll-position; /* Оптимизация для браузеров */
         }
 
         .card {
@@ -1830,4 +1833,5 @@
     </script>
 </body>
 </html>
+
 
