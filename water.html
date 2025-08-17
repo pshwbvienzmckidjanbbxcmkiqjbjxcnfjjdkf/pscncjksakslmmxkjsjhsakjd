@@ -42,6 +42,12 @@
             padding: 0;
             margin: 0;
             transition: background-color 0.3s ease;
+            height: 100%;
+            overflow: hidden;
+        }
+        html {
+            height: 100%;
+            overflow: hidden; /* Отключаем глобальный скролл */
         }
 
         body.dark-theme {
@@ -52,7 +58,7 @@
         .container {
             max-width: 100%;
             margin: 0;
-            /* height: 100vh; */
+            height: 100vh;
             display: flex;
             flex-direction: column;
         }
@@ -76,7 +82,10 @@
         .main-content {
             flex: 1;
             padding: 20px;
-            /* overflow-y: auto; */
+            overflow-y: auto; /* Включаем скролл внутри контейнера */
+            -webkit-overflow-scrolling: touch; /* Плавный скролл для iOS */
+            transform: translateZ(0); /* Аппаратное ускорение */
+            will-change: scroll-position; /* Оптимизация для браузеров */
         }
 
         .card {
@@ -94,6 +103,7 @@
             opacity: 0;
             transform: translateY(20px);
             animation: fadeIn 0.6s ease forwards;
+            contain: content;
         }
 
         body.dark-theme .card {
@@ -1820,3 +1830,4 @@
     </script>
 </body>
 </html>
+
